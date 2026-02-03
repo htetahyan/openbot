@@ -13,6 +13,7 @@ import {
   SYNTHETIC_MODEL_CATALOG,
 } from "./synthetic-models.js";
 import { discoverVeniceModels, VENICE_BASE_URL } from "./venice-models.js";
+import { buildNvidiaNimProvider } from "../providers/nvidia-nim.js";
 
 type ModelsConfig = NonNullable<OpenClawConfig["models"]>;
 export type ProviderConfig = NonNullable<ModelsConfig["providers"]>[string];
@@ -459,6 +460,17 @@ export async function resolveImplicitProviders(params: {
     resolveApiKeyFromProfiles({ provider: "ollama", store: authStore });
   if (ollamaKey) {
     providers.ollama = { ...(await buildOllamaProvider()), apiKey: ollamaKey };
+  }
+
+  // NVIDIA NIM provider
+  const nvidiaNimKey =
+    resolveEnvApiKeyVarName("nvidia-nim") ??
+    resolveApiKeyFromProfiles({ provider: "nvidia-nim", store: authStore });
+  if (nvidiaNimKey) {
+    providers["nvidia-nim"] = {
+      ...buildNvidiaNimProvider(),
+      apiKey: nvidiaNimKey,
+    };
   }
 
   return providers;

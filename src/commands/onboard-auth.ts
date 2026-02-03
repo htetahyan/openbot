@@ -31,6 +31,11 @@ export {
 } from "./onboard-auth.config-minimax.js";
 
 export {
+  applyNvidiaNimConfig,
+  applyNvidiaNimProviderConfig,
+  NVIDIA_NIM_DEFAULT_MODEL_REF,
+} from "./onboard-auth.config-nvidia-nim.js";
+export {
   applyOpencodeZenConfig,
   applyOpencodeZenProviderConfig,
 } from "./onboard-auth.config-opencode.js";
@@ -41,6 +46,7 @@ export {
   setKimiCodingApiKey,
   setMinimaxApiKey,
   setMoonshotApiKey,
+  setNvidiaNimApiKey,
   setOpencodeZenApiKey,
   setOpenrouterApiKey,
   setSyntheticApiKey,

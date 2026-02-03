@@ -29,6 +29,7 @@ export type AuthChoice =
   | "minimax-api"
   | "minimax-api-lightning"
   | "minimax-portal"
+  | "nvidia-nim-api-key"
   | "opencode-zen"
   | "github-copilot"
   | "copilot-proxy"
@@ -74,6 +75,7 @@ export type OnboardOptions = {
   syntheticApiKey?: string;
   veniceApiKey?: string;
   opencodeZenApiKey?: string;
+  nvidiaNimApiKey?: string;
   gatewayPort?: number;
   gatewayBind?: GatewayBind;
   gatewayAuth?: GatewayAuthChoice;

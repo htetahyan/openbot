@@ -17,6 +17,8 @@ import {
   applyKimiCodeProviderConfig,
   applyMoonshotConfig,
   applyMoonshotProviderConfig,
+  applyNvidiaNimConfig,
+  applyNvidiaNimProviderConfig,
   applyOpencodeZenConfig,
   applyOpencodeZenProviderConfig,
   applyOpenrouterConfig,
@@ -32,6 +34,7 @@ import {
   applyZaiConfig,
   KIMI_CODING_MODEL_REF,
   MOONSHOT_DEFAULT_MODEL_REF,
+  NVIDIA_NIM_DEFAULT_MODEL_REF,
   OPENROUTER_DEFAULT_MODEL_REF,
   SYNTHETIC_DEFAULT_MODEL_REF,
   VENICE_DEFAULT_MODEL_REF,
@@ -40,6 +43,7 @@ import {
   setGeminiApiKey,
   setKimiCodingApiKey,
   setMoonshotApiKey,
+  setNvidiaNimApiKey,
   setOpencodeZenApiKey,
   setOpenrouterApiKey,
   setSyntheticApiKey,
@@ -518,6 +522,65 @@ export async function applyAuthChoiceApiProviders(
         applyDefaultConfig: applySyntheticConfig,
         applyProviderConfig: applySyntheticProviderConfig,
         noteDefault: SYNTHETIC_DEFAULT_MODEL_REF,
+        noteAgentModel,
+        prompter: params.prompter,
+      });
+      nextConfig = applied.config;
+      agentModelOverride = applied.agentModelOverride ?? agentModelOverride;
+    }
+    return { config: nextConfig, agentModelOverride };
+  }
+
+  if (authChoice === "nvidia-nim-api-key") {
+    let hasCredential = false;
+
+    if (!hasCredential && params.opts?.token && params.opts?.tokenProvider === "nvidia-nim") {
+      await setNvidiaNimApiKey(normalizeApiKeyInput(params.opts.token), params.agentDir);
+      hasCredential = true;
+    }
+
+    if (!hasCredential) {
+      await params.prompter.note(
+        [
+          "NVIDIA NIM provides OpenAI-compatible endpoints for various models.",
+          "Get your API key at: https://build.nvidia.com",
+          "Supported models: Llama, DeepSeek, Mistral, and more.",
+        ].join("\n"),
+        "NVIDIA NIM",
+      );
+    }
+
+    const envKey = resolveEnvApiKey("nvidia-nim");
+    if (envKey) {
+      const useExisting = await params.prompter.confirm({
+        message: `Use existing NVIDIA_API_KEY (${envKey.source}, ${formatApiKeyPreview(envKey.apiKey)})?`,
+        initialValue: true,
+      });
+      if (useExisting) {
+        await setNvidiaNimApiKey(envKey.apiKey, params.agentDir);
+        hasCredential = true;
+      }
+    }
+    if (!hasCredential) {
+      const key = await params.prompter.text({
+        message: "Enter NVIDIA NIM API key",
+        validate: validateApiKeyInput,
+      });
+      await setNvidiaNimApiKey(normalizeApiKeyInput(String(key)), params.agentDir);
+    }
+    nextConfig = applyAuthProfileConfig(nextConfig, {
+      profileId: "nvidia-nim:default",
+      provider: "nvidia-nim",
+      mode: "api_key",
+    });
+    {
+      const applied = await applyDefaultModelChoice({
+        config: nextConfig,
+        setDefaultModel: params.setDefaultModel,
+        defaultModel: NVIDIA_NIM_DEFAULT_MODEL_REF,
+        applyDefaultConfig: applyNvidiaNimConfig,
+        applyProviderConfig: applyNvidiaNimProviderConfig,
+        noteDefault: NVIDIA_NIM_DEFAULT_MODEL_REF,
         noteAgentModel,
         prompter: params.prompter,
       });

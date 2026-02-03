@@ -14,6 +14,7 @@ export type AuthChoiceGroupId =
   | "copilot"
   | "openrouter"
   | "ai-gateway"
+  | "nvidia-nim"
   | "moonshot"
   | "zai"
   | "xiaomi"
@@ -79,6 +80,12 @@ const AUTH_CHOICE_GROUP_DEFS: {
     choices: ["qwen-portal"],
   },
   {
+    value: "nvidia-nim",
+    label: "NVIDIA NIM",
+    hint: "Llama, DeepSeek, Mistral models",
+    choices: ["nvidia-nim-api-key"],
+  },
+  {
     value: "zai",
     label: "Z.AI (GLM 4.7)",
     hint: "API key",
@@ -141,6 +148,7 @@ export function buildAuthChoiceOptions(params: {
   });
   options.push({ value: "chutes", label: "Chutes (OAuth)" });
   options.push({ value: "openai-api-key", label: "OpenAI API key" });
+  options.push({ value: "nvidia-nim-api-key", label: "NVIDIA NIM API key" });
   options.push({ value: "openrouter-api-key", label: "OpenRouter API key" });
   options.push({
     value: "ai-gateway-api-key",
